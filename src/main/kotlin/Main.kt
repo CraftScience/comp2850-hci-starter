@@ -29,14 +29,14 @@ import io.ktor.util.*
 // Week 8+ imports (status pages, error handling):
 // import io.ktor.http.ContentType     // For custom error page content types
 // import io.ktor.http.HttpStatusCode  // For status codes in error handlers
-// import io.ktor.server.plugins.statuspages.StatusPages  // Custom error pages plugin
-// import io.ktor.server.plugins.statuspages.status       // Status page configuration
+// import io.ktor.server.plugins.statuspages.*  // Status pages plugin (StatusPages, status)
 
 // Week 9+ imports (request tracking, metrics):
 // import utils.ReqIdKey                // AttributeKey for request ID tracking
 // import utils.generateRequestId       // Generate unique request IDs for logging
+// Note: ApplicationCallPipeline is covered by io.ktor.server.application.*
 
-// Note: Solution also adds ApplicationCallPipeline.Setup intercept for session/reqId
+// Week 9 also adds ApplicationCallPipeline.Setup intercept in configureRouting() for session/reqId
 
 /**
  * Main entry point for COMP2850 HCI server-first application.
