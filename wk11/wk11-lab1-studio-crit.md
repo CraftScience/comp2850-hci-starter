@@ -622,7 +622,9 @@ Key takeaways:
 
 Ready for Week 11 Lab 2 final refinements and submission prep.
 
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
+Co-Authored-By: Claude <noreply@anthropic.com>
 EOF
 )"
 ```

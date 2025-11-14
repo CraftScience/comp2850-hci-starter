@@ -46,30 +46,27 @@ import java.io.StringWriter
  */
 
 fun Route.taskRoutes() {
-    val pebble =
-        PebbleEngine
-            .Builder()
-            .loader(
-                io.pebbletemplates.pebble.loader.ClasspathLoader().apply {
-                    prefix = "templates/"
-                },
-            ).build()
+    val pebble = PebbleEngine.Builder()
+        .loader(io.pebbletemplates.pebble.loader.ClasspathLoader().apply {
+            prefix = "templates/"
+        })
+        .build()
 
     /**
      * Helper: Check if request is from HTMX
      */
-    fun ApplicationCall.isHtmx(): Boolean = request.headers["HX-Request"]?.equals("true", ignoreCase = true) == true
+    fun ApplicationCall.isHtmx(): Boolean =
+        request.headers["HX-Request"]?.equals("true", ignoreCase = true) == true
 
     /**
      * GET /tasks - List all tasks
      * Returns full page (no HTMX differentiation in Week 6)
      */
     get("/tasks") {
-        val model =
-            mapOf(
-                "title" to "Tasks",
-                "tasks" to TaskRepository.all(),
-            )
+        val model = mapOf(
+            "title" to "Tasks",
+            "tasks" to TaskRepository.all()
+        )
         val template = pebble.getTemplate("tasks/index.peb")
         val writer = StringWriter()
         template.evaluate(writer, model)

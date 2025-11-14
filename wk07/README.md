@@ -17,8 +17,7 @@ Suggested order:
 
 ## Directory layout
 
-```
-wk07/
+week7/
 ├── README.md
 ├── src/
 │   ├── wk7-lab1-ethics-inline-edit.md
@@ -41,4 +40,5 @@ wk07/
     │   └── change-log.md
     └── evidence/
         └── README.md
-```
+
+

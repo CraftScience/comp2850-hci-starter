@@ -39,10 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger
  * **Week 7 evolution**: Add `completed: Boolean` field
  * **Week 8 evolution**: Add `createdAt` timestamp for sorting
  */
-data class Task(
-    val id: Int,
-    var title: String,
-)
+data class Task(val id: Int, var title: String)
 
 /**
  * In-memory repository with CSV persistence.

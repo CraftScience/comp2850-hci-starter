@@ -93,17 +93,14 @@ fun Application.configureLogging() {
  * - Full pages in root or feature subdirectories
  */
 fun Application.configureTemplating() {
-    val pebbleEngine =
-        PebbleEngine
-            .Builder()
-            .loader(
-                io.pebbletemplates.pebble.loader.ClasspathLoader().apply {
-                    prefix = "templates/"
-                },
-            ).autoEscaping(true) // XSS protection via auto-escaping
-            .cacheActive(false) // Disable cache in dev for hot reload
-            .strictVariables(false) // Allow undefined variables (fail gracefully)
-            .build()
+    val pebbleEngine = PebbleEngine.Builder()
+        .loader(io.pebbletemplates.pebble.loader.ClasspathLoader().apply {
+            prefix = "templates/"
+        })
+        .autoEscaping(true)      // XSS protection via auto-escaping
+        .cacheActive(false)      // Disable cache in dev for hot reload
+        .strictVariables(false)  // Allow undefined variables (fail gracefully)
+        .build()
 
     environment.monitor.subscribe(ApplicationStarted) {
         log.info("✓ Pebble templates loaded from resources/templates/")
@@ -138,7 +135,7 @@ val PebbleEngineKey = AttributeKey<PebbleEngine>("PebbleEngine")
  */
 suspend fun ApplicationCall.renderTemplate(
     templateName: String,
-    context: Map<String, Any> = emptyMap(),
+    context: Map<String, Any> = emptyMap()
 ): String {
     val engine = application.attributes[PebbleEngineKey]
     val writer = StringWriter()
@@ -146,12 +143,10 @@ suspend fun ApplicationCall.renderTemplate(
 
     // Add global context available to all templates
     val sessionData = sessions.get<SessionData>()
-    val enrichedContext =
-        context +
-            mapOf(
-                "sessionId" to (sessionData?.id ?: "anonymous"),
-                "isHtmx" to isHtmxRequest(),
-            )
+    val enrichedContext = context + mapOf(
+        "sessionId" to (sessionData?.id ?: "anonymous"),
+        "isHtmx" to isHtmxRequest()
+    )
 
     template.evaluate(writer, enrichedContext)
     return writer.toString()
@@ -175,7 +170,9 @@ suspend fun ApplicationCall.renderTemplate(
  * }
  * ```
  */
-fun ApplicationCall.isHtmxRequest(): Boolean = request.headers["HX-Request"] == "true"
+fun ApplicationCall.isHtmxRequest(): Boolean {
+    return request.headers["HX-Request"] == "true"
+}
 
 /**
  * Configure session handling (privacy-safe anonymous IDs).
