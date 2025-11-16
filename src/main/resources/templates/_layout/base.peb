@@ -18,6 +18,11 @@
       white-space: nowrap;
     }
 
+    button[type="submit"],
+    button {
+      color: #495057 !important; /* 7:1 contrast (AAA) */
+    }
+
     /* Skip link (keyboard only) */
     .skip-link {
       position: absolute;

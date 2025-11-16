@@ -19,10 +19,10 @@ import java.io.StringWriter
  */
 
 // Week 7+ imports (inline edit, toggle completion):
-// import model.Task               // When Task becomes separate model class
-// import model.ValidationResult   // For validation errors
-// import renderTemplate            // Extension function from Main.kt
-// import isHtmxRequest             // Extension function from Main.kt
+import model.Task               // When Task becomes separate model class
+import model.ValidationResult   // For validation errors
+import renderTemplate            // Extension function from Main.kt
+import isHtmxRequest             // Extension function from Main.kt
 
 // Week 8+ imports (pagination, search, URL encoding):
 // import io.ktor.http.encodeURLParameter  // For query parameter encoding
