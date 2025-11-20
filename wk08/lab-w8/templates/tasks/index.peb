@@ -1,11 +1,29 @@
 {% extends "_layout/base.peb" %}
 {% block content %}
 <h1>Tasks</h1>
-
+{% if error %}
+<div role="alert" aria-live="assertive" class="error-summary" id="error-summary" tabindex="-1">
+  <h2>There is a problem</h2>
+  <ul>
+    {% if error == "title" %}
+    <li><a href="#title">{% if msg == "too_long" %}Title is too long (max 200 characters){% else %}Title is required{% endif %}</a></li>
+    {% endif %}
+  </ul>
+</div>
+{% endif %}
 <form action="/tasks" method="post"
       hx-post="/tasks" hx-target="#task-list" hx-swap="beforeend">
   <label for="title">Title</label>
-  <input id="title" name="title" required aria-describedby="title-hint">
+<label for="title">Task title</label>
+<input id="title" name="title" type="text"
+       {% if error == "title" %}aria-invalid="true" aria-describedby="title-error"{% endif %}
+       required>
+{% if error == "title" %}
+<p id="title-error" class="error-message">
+  {% if msg == "too_long" %}Title is too long (max 200 characters){% else %}Title is required{% endif %}
+</p>
+{% endif %}
+
   <small id="title-hint">Short and specific.</small>
   <button type="submit">Add</button>
 </form>

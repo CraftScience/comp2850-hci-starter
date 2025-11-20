@@ -25,8 +25,8 @@ import renderTemplate            // Extension function from Main.kt
 import isHtmxRequest             // Extension function from Main.kt
 
 // Week 8+ imports (pagination, search, URL encoding):
-// import io.ktor.http.encodeURLParameter  // For query parameter encoding
-// import utils.Page                       // Pagination helper class
+import io.ktor.http.encodeURLParameter  // For query parameter encoding
+import utils.Page                       // Pagination helper class
 
 // Week 9+ imports (metrics logging, instrumentation):
 // import utils.jsMode              // Detect JS mode (htmx/nojs)
@@ -63,15 +63,24 @@ fun Route.taskRoutes() {
      * Returns full page (no HTMX differentiation in Week 6)
      */
     get("/tasks") {
+        val error = call.request.queryParameters["error"]
+        val msg = call.request.queryParameters["msg"]
+        val q = call.request.queryParameters["q"].orEmpty()
+        val page = call.request.queryParameters["page"]?.toIntOrNull() ?: 1
+        val data = repo.search(q, page)
+
         val model = mapOf(
             "title" to "Tasks",
-            "tasks" to TaskRepository.all()
+            "page" to data,
+            "q" to q,
+            "error" to error,
+            "msg" to msg
         )
-        val template = pebble.getTemplate("tasks/index.peb")
-        val writer = StringWriter()
-        template.evaluate(writer, model)
-        call.respondText(writer.toString(), ContentType.Text.Html)
+
+        val html = PebbleRender.render("tasks/index.peb", model)
+        call.respondText(html, ContentType.Text.Html)
     }
+
 
     /**
      * POST /tasks - Add new task
@@ -80,62 +89,58 @@ fun Route.taskRoutes() {
     post("/tasks") {
         val title = call.receiveParameters()["title"].orEmpty().trim()
 
+        // Validation
         if (title.isBlank()) {
-            // Validation error handling
             if (call.isHtmx()) {
-                val error = """<div id="status" hx-swap-oob="true" role="alert" aria-live="assertive">
-                    Title is required. Please enter at least one character.
-                </div>"""
-                return@post call.respondText(error, ContentType.Text.Html, HttpStatusCode.BadRequest)
+                val status = """<div id="status" hx-swap-oob="true">Title is required.</div>"""
+                return@post call.respondText(status, ContentType.Text.Html, HttpStatusCode.BadRequest)
             } else {
-                // No-JS: redirect back (could add error query param)
-                call.response.headers.append("Location", "/tasks")
-                return@post call.respond(HttpStatusCode.SeeOther)
+                // No-JS: redirect with error query param
+                return@post call.respondRedirect("/tasks?error=title")
             }
         }
 
-        val task = TaskRepository.add(title)
-
-        if (call.isHtmx()) {
-            // Return HTML fragment for new task
-            val fragment = """<li id="task-${task.id}">
-                <span>${task.title}</span>
-                <form action="/tasks/${task.id}/delete" method="post" style="display: inline;"
-                      hx-post="/tasks/${task.id}/delete"
-                      hx-target="#task-${task.id}"
-                      hx-swap="outerHTML">
-                  <button type="submit" aria-label="Delete task: ${task.title}">Delete</button>
-                </form>
-            </li>"""
-
-            val status = """<div id="status" hx-swap-oob="true">Task "${task.title}" added successfully.</div>"""
-
-            return@post call.respondText(fragment + status, ContentType.Text.Html, HttpStatusCode.Created)
+        if (title.length > 200) {
+            if (call.isHtmx()) {
+                val status = """<div id="status" hx-swap-oob="true">Title too long (max 200 chars).</div>"""
+                return@post call.respondText(status, ContentType.Text.Html, HttpStatusCode.BadRequest)
+            } else {
+                return@post call.respondRedirect("/tasks?error=title&msg=too_long")
+            }
         }
 
-        // No-JS: POST-Redirect-GET pattern (303 See Other)
-        call.response.headers.append("Location", "/tasks")
-        call.respond(HttpStatusCode.SeeOther)
+        // Success path
+        val task = repo.add(title)
+        if (call.isHtmx()) {
+            val item = PebbleRender.render("tasks/_item.peb", mapOf("t" to task))
+            val status = """<div id="status" hx-swap-oob="true">Added "${task.title}".</div>"""
+            return@post call.respondText(item + status, ContentType.Text.Html)
+        }
+        call.respondRedirect("/tasks")
     }
+
 
     /**
      * POST /tasks/{id}/delete - Delete task
      * Dual-mode: HTMX empty response or PRG redirect
      */
+
+    // HTMX path (HTTP DELETE)
+    delete("/tasks/{id}") {
+        val id = call.parameters["id"]?.toIntOrNull() ?: return@delete call.respond(HttpStatusCode.BadRequest)
+        val task = repo.get(id)
+        repo.delete(id)
+
+        val status = """<div id="status" hx-swap-oob="true">Deleted "${task?.title ?: "task"}".</div>"""
+        // Return empty string (outerHTML swap removes the <li>)
+        call.respondText(status, ContentType.Text.Html)
+    }
+
+    // No-JS path (POST fallback)
     post("/tasks/{id}/delete") {
-        val id = call.parameters["id"]?.toIntOrNull()
-        val removed = id?.let { TaskRepository.delete(it) } ?: false
-
-        if (call.isHtmx()) {
-            val message = if (removed) "Task deleted." else "Could not delete task."
-            val status = """<div id="status" hx-swap-oob="true">$message</div>"""
-            // Return empty content to trigger outerHTML swap (removes the <li>)
-            return@post call.respondText(status, ContentType.Text.Html)
-        }
-
-        // No-JS: POST-Redirect-GET pattern (303 See Other)
-        call.response.headers.append("Location", "/tasks")
-        call.respond(HttpStatusCode.SeeOther)
+        val id = call.parameters["id"]?.toIntOrNull() ?: return@post call.respond(HttpStatusCode.BadRequest)
+        repo.delete(id)
+        call.respondRedirect("/tasks")
     }
 
     // TODO: Week 7 Lab 1 Activity 2 Steps 2-5

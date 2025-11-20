@@ -27,9 +27,9 @@ import io.ktor.util.*
 import routes.configureEditRoutes  // Separate route file for edit functionality
 
 // Week 8+ imports (status pages, error handling):
-// import io.ktor.http.ContentType     // For custom error page content types
-// import io.ktor.http.HttpStatusCode  // For status codes in error handlers
-// import io.ktor.server.plugins.statuspages.*  // Status pages plugin (StatusPages, status)
+import io.ktor.http.ContentType     // For custom error page content types
+import io.ktor.http.HttpStatusCode  // For status codes in error handlers
+import io.ktor.server.plugins.statuspages.*  // Status pages plugin (StatusPages, status)
 
 // Week 9+ imports (request tracking, metrics):
 // import utils.ReqIdKey                // AttributeKey for request ID tracking

@@ -1,0 +1,8 @@
+<button type="button"
+        hx-delete="/tasks/{{ t.id }}"
+        hx-target="#task-{{ t.id }}"
+        hx-swap="outerHTML"
+        hx-confirm="Delete the task '{{ t.title }}'?"
+        aria-label="Delete task: {{ t.title }}">
+  Delete
+</button>
