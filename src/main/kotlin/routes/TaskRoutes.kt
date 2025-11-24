@@ -29,9 +29,9 @@ import io.ktor.http.encodeURLParameter  // For query parameter encoding
 import utils.Page                       // Pagination helper class
 
 // Week 9+ imports (metrics logging, instrumentation):
-// import utils.jsMode              // Detect JS mode (htmx/nojs)
-// import utils.logValidationError  // Log validation failures
-// import utils.timed               // Measure request timing
+import utils.jsMode              // Detect JS mode (htmx/nojs)
+import utils.logValidationError  // Log validation failures
+import utils.timed               // Measure request timing
 
 // Note: Solution repo uses storage.TaskStore instead of data.TaskRepository
 // You may refactor to this in Week 10 for production readiness
@@ -87,37 +87,48 @@ fun Route.taskRoutes() {
      * Dual-mode: HTMX fragment or PRG redirect
      */
     post("/tasks") {
-        val title = call.receiveParameters()["title"].orEmpty().trim()
+        val reqId = newReqId()
+        call.attributes.put(RequestIdKey, reqId)
 
-        // Validation
-        if (title.isBlank()) {
+        val session = call.request.cookies["sid"] ?: "anon"
+        val jsMode = call.jsMode()
+
+        call.timed(taskCode = "T3_add", jsMode = jsMode) {
+            val title = call.receiveParameters()["title"].orEmpty().trim()
+
+            // Validation
+            if (title.isBlank()) {
+                Logger.validationError(session, reqId, "T3_add", "blank_title", 0, jsMode)
+                if (call.isHtmx()) {
+                    val status = """<div id="status" hx-swap-oob="true">Title is required.</div>"""
+                    return@timed call.respondText(status, ContentType.Text.Html, HttpStatusCode.BadRequest)
+                } else {
+                    return@timed call.respondRedirect("/tasks?error=title")
+                }
+            }
+
+            if (title.length > 200) {
+                Logger.validationError(session, reqId, "T3_add", "max_length", 0, jsMode)
+                if (call.isHtmx()) {
+                    val status = """<div id="status" hx-swap-oob="true">Title too long (max 200 chars).</div>"""
+                    return@timed call.respondText(status, ContentType.Text.Html, HttpStatusCode.BadRequest)
+                } else {
+                    return@timed call.respondRedirect("/tasks?error=title&msg=too_long")
+                }
+            }
+
+            // Success path
+            val task = repo.add(title)
             if (call.isHtmx()) {
-                val status = """<div id="status" hx-swap-oob="true">Title is required.</div>"""
-                return@post call.respondText(status, ContentType.Text.Html, HttpStatusCode.BadRequest)
+                val item = PebbleRender.render("tasks/_item.peb", mapOf("t" to task))
+                val status = """<div id="status" hx-swap-oob="true">Added "${task.title}".</div>"""
+                call.respondText(item + status, ContentType.Text.Html)
             } else {
-                // No-JS: redirect with error query param
-                return@post call.respondRedirect("/tasks?error=title")
+                call.respondRedirect("/tasks")
             }
         }
-
-        if (title.length > 200) {
-            if (call.isHtmx()) {
-                val status = """<div id="status" hx-swap-oob="true">Title too long (max 200 chars).</div>"""
-                return@post call.respondText(status, ContentType.Text.Html, HttpStatusCode.BadRequest)
-            } else {
-                return@post call.respondRedirect("/tasks?error=title&msg=too_long")
-            }
-        }
-
-        // Success path
-        val task = repo.add(title)
-        if (call.isHtmx()) {
-            val item = PebbleRender.render("tasks/_item.peb", mapOf("t" to task))
-            val status = """<div id="status" hx-swap-oob="true">Added "${task.title}".</div>"""
-            return@post call.respondText(item + status, ContentType.Text.Html)
-        }
-        call.respondRedirect("/tasks")
     }
+
 
 
     /**
