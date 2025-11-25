@@ -1,7 +1,10 @@
-id,title,story_ref,story_type,need,type,severity,inclusion_risk,evidence,notes,candidate_fix
-9,Delete button text contrast 4.2:1 (fails AA),wk07/audit/axe-report.md#Issue2,WCAG violation,Visibility,Accessibility,High,"Low vision,Situational","axe: color-contrast; WCAG 1.4.3","Pico.css default gray #6c757d on white = 4.2:1; needs 4.5:1",true
-10,Focus outline too faint (Pico.css default),wk07/audit/wcag-checklist.md#2.4.7,WCAG partial,Visibility,Accessibility,Medium,Keyboard,"Manual test: outline visible but faint","Add custom :focus { outline: 3px solid #1976d2; }",true
-11,No confirmation for delete action,wk07/audit/heuristics.md#H3,Heuristic violation,Error prevention,Usability,Medium,"Motor,Cognitive","Nielsen H3 + H5","Accidental clicks cause permanent deletion; add confirmation dialog",false
-12,No undo feature for delete,wk07/audit/heuristics.md#H3,Heuristic violation,Customer control,Usability,Low,"Motor,
-Cognitive","Nielsen H3","Defer to Semester 2; requires state management",false
-13,No help documentation or tooltips,wk07/audit/heuristics.md#H10,Heuristic violation,Learning support,Usability,Low,Cognitive,"Nielsen H10","Defer to Semester 2; low priority",false
+id,week,priority,category,description,wcag,status,evidence,mitigation,candidate_fix
+wk9-01,9,high,a11y,"Validation errors not announced by screen readers",4.1.3,open,"data/metrics.csv#P2_4d8e T2 validation_error; pilots/P2-notes.md L12; pilots/P3-notes.md L8","Add role=alert to error messages, aria-describedby for input association",true
+
+wk9-02,9,medium,ux,"Filter auto-search confuses some participants (expected button)",,"open","pilots/P1-notes.md L6","Consider adding visible 'Apply' button or help text",false
+
+wk9-03,9,high,a11y,"Error summary not keyboard-focusable in no-JS mode",3.2.1,open,"pilots/P3-notes.md L10; data/metrics.csv#P3_1f2a T2 fail","Add tabindex=-1 to error summary, focus on page load",true
+
+wk9-04,9,low,ux,"Delete confirmation missing in no-JS (documented trade-off)",3.3.4,open,"pilots/P3-notes.md L12; wk08/docs/prototyping-constraints.md L78","Consider adding /tasks/{id}/delete/confirm page",false
+
+wk9-05,9,high,a11y,"Result count after filter not announced to SR",4.1.3,open,"pilots/P2-notes.md L8","Move result count into live region (role=status)",true
