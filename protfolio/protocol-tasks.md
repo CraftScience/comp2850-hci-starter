@@ -1,7 +1,6 @@
 # COMP2850 HCI Evaluation Protocol
 
-**Student**: [Your Name] (Student ID: [Your ID])  
-**Submission Date**: [DD/MM/YYYY]  
+**Student**: Xuezhe Sheng
 **Academic Year**: 2025-26
 
 ---
@@ -14,7 +13,7 @@
 - ✅ I confirm all results are real and not fabricated
 - ✅ I confirm this work is my own
 
-**AI tools used** (if any): [e.g., "GitHub Copilot for route handler debugging (lines 45-67 in TaskRoutes.kt)"]
+**AI tools used**
 
 ---
 
@@ -40,7 +39,7 @@
 
 ---
 
-## 2. Evaluation Tasks (4-5 Tasks)
+## 2. Evaluation Tasks (5 Tasks)
 
 ### Task 1 (T1): Add New Task
 - **Scenario**: You need to remember to "Submit assignment by Friday"
@@ -98,18 +97,16 @@
 - "I may take screenshots and notes. I'll remove any identifying information."
 - "Do you consent to participate?" [Wait for verbal "yes"]
 
-**Recorded consent timestamp**: [Record here when each participant consents, e.g., "P1 consented 22/11/2025 14:05"]
-
 ---
 
 ## 4. Participant Consent Log
 
 | Participant | Consent Given? | Datetime Consented | Variant Used |
 |-------------|----------------|-------------------|--------------|
-| P1          | ✅ Yes         | [DD/MM/YYYY HH:MM] | [e.g., Mouse + HTMX] |
-| P2          | ✅ Yes         | [DD/MM/YYYY HH:MM] | [e.g., Keyboard-only] |
-| P3          | ✅ Yes         | [DD/MM/YYYY HH:MM] | [e.g., Screen reader + keyboard] |
-| P4          | ✅ Yes         | [DD/MM/YYYY HH:MM] | [e.g., No-JS mode] |
+| P1          | ✅ Yes         | [01/12/2025 10:15] | [Mouse + HTMX] |
+| P2          | ✅ Yes         | [01/12/2025 10:15] | [Keyboard-only] |
+| P3          | ✅ Yes         | [01/12/2025 10:15] | [Screen reader + keyboard] |
+| P4          | ✅ Yes         | [01/12/2025 10:15] | [No-JS mode] |
 
 ---
 
